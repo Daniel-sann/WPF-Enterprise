@@ -6,7 +6,7 @@ namespace FriendOrganizer.DataAccess
 {
     public class FriendOrganizerDbContext : DbContext
     {
-        public FriendOrganizerDbContext():base("FriendOrganizerDb")
+        public FriendOrganizerDbContext()
         {
             
         }
