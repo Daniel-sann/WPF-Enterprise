@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
 using FriendOrganizer.Model;
 using FriendOrganizer.UI.Data;
+using FriendOrganizer.UI.Event;
+using Prism.Events;
 
 namespace FriendOrganizer.UI.ViewModel
 {
@@ -8,9 +10,18 @@ namespace FriendOrganizer.UI.ViewModel
     {
         private readonly IFriendDataService _friendDataService;
 
-        public FriendDetailViewModel(IFriendDataService friendDataService)
+        private readonly IEventAggregator _eventAggregator;
+
+        public FriendDetailViewModel(IFriendDataService friendDataService, IEventAggregator eventAggregator)
         {
             _friendDataService = friendDataService;
+            _eventAggregator = eventAggregator;
+            _eventAggregator.GetEvent<OpenFriendDetailViewEvent>().Subscribe(OnOpenFriendDetailView);
+        }
+
+        private async void OnOpenFriendDetailView(int friendId)
+        {
+            await LoadAsync(friendId);
         }
 
         public async Task LoadAsync(int friendId)

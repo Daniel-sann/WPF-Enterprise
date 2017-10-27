@@ -24,7 +24,7 @@
         <TextBox Grid.Row="3" Text="{Binding Friend.LastName,
                 Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10 0 10 10"/>
 
-        <Label Grid.Row="4" Content="LastName" Margin="10 0"/>
+        <Label Grid.Row="4" Content="Email" Margin="10 0"/>
         <TextBox Grid.Row="5" Text="{Binding Friend.Email,
                 Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10 0 10 10"/>
     </Grid>
