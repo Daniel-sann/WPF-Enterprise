@@ -30,6 +30,11 @@ namespace FriendOrganizer.UI.ViewModel
         private async void OnSaveExecute()
         {
             await _friendDataService.SaveAsync(Friend);
+            _eventAggregator.GetEvent<AfterFriendSavedEvent>().Publish(new AfterFriendSavedEventArgs
+            {
+                Id = Friend.Id,
+                DisplayMember = $"{Friend.FirstName} {Friend.LastName}"
+            });
         }
 
         private async void OnOpenFriendDetailView(int friendId)

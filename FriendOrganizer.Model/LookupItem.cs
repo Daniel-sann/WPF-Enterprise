@@ -1,4 +1,6 @@
-﻿namespace FriendOrganizer.Model
+﻿using System.ComponentModel;
+
+namespace FriendOrganizer.Model
 {
     public class LookupItem
     {
