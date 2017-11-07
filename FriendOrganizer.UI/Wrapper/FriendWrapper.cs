@@ -17,25 +17,25 @@ namespace FriendOrganizer.UI.Wrapper
             set
             {
                 SetValue(value);
-                ValidateProperty(nameof(FirstName));
+                //ValidateProperty(nameof(FirstName));
             }
         }
 
 
 
-        private void ValidateProperty(string propertyName)
-        {
-            ClearErrors(propertyName);
-            switch (propertyName)
-            {
-                case nameof(FirstName):
-                    if (string.Equals(FirstName, "Robot", StringComparison.OrdinalIgnoreCase))
-                    {
-                        AddError(propertyName, "Robots are not valid friends");
-                    }
-                    break;
-            }
-        }
+        //private void ValidateProperty(string propertyName)
+        //{
+        //    ClearErrors(propertyName);
+        //    switch (propertyName)
+        //    {
+        //        case nameof(FirstName):
+        //            if (string.Equals(FirstName, "Robot", StringComparison.OrdinalIgnoreCase))
+        //            {
+        //                AddError(propertyName, "Robots are not valid friends");
+        //            }
+        //            break;
+        //    }
+        //}
 
         public string LastName
         {
