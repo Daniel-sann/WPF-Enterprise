@@ -23,9 +23,9 @@ namespace FriendOrganizer.UI.ViewModel
             _eventAggregator = eventAggregator;
             SaveCommand = new DelegateCommand(OnSaveExecute, OnsaveCanExecute);
         }
-        public async Task LoadAsync(int friendId)
+        public async Task LoadAsync(int? friendId)
         {
-            var friend = await _friendRepository.GetByIdAsync(friendId);
+            var friend = friendId.HasValue ? await _friendRepository.GetByIdAsync(friendId.Value) : CreateNewFriend();               
             Friend = new FriendWrapper(friend);
             Friend.PropertyChanged += (s, e) =>
             {
@@ -39,6 +39,11 @@ namespace FriendOrganizer.UI.ViewModel
                 }
             };
             ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
+            if (Friend.Id == 0)
+            {
+                //trick to trigger validation 
+                Friend.FirstName = "";
+            }
         }
 
         public FriendWrapper Friend
@@ -83,6 +88,12 @@ namespace FriendOrganizer.UI.ViewModel
                 Id = Friend.Id,
                 DisplayMember = $"{Friend.FirstName} {Friend.LastName}"
             });
-        }  
+        }
+        private Friend CreateNewFriend()
+        {
+            var friend = new Friend();
+            _friendRepository.Add(friend);
+            return friend;
+        }
     }
 }

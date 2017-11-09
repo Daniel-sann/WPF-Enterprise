@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using FriendOrganizer.UI.Event;
 using FriendOrganizer.UI.View.Services;
+using Prism.Commands;
 using Prism.Events;
 
 namespace FriendOrganizer.UI.ViewModel
@@ -16,10 +18,11 @@ namespace FriendOrganizer.UI.ViewModel
         public MainViewModel(INavigationViewModel navigationViewModel, Func<IFriendDetailViewModel> friendDetailViewModelCreator, IEventAggregator eventAggregator,
             IMessageDialogService messageDialogService)
         {
-            _eventAggregator = eventAggregator; 
+            _eventAggregator = eventAggregator;
             _friendDetailViewModelCreator = friendDetailViewModelCreator;
             _eventAggregator.GetEvent<OpenFriendDetailViewEvent>().Subscribe(OnOpenFriendDetailView);
             _messageDialogService = messageDialogService;
+            CreateNewFriendCommand = new DelegateCommand(OnCreateNewFriendExecute);
             NavigationViewModel = navigationViewModel;
         }
 
@@ -28,7 +31,9 @@ namespace FriendOrganizer.UI.ViewModel
             await NavigationViewModel.LoadAsync();
         }
 
-        private async void OnOpenFriendDetailView(int friendId)
+        public ICommand CreateNewFriendCommand { get; }
+
+        private async void OnOpenFriendDetailView(int? friendId)
         {
             if (FriendDetailViewModel != null && FriendDetailViewModel.HasChanges)
             {
@@ -39,12 +44,12 @@ namespace FriendOrganizer.UI.ViewModel
                 }
             }
             FriendDetailViewModel = _friendDetailViewModelCreator();
-            await  FriendDetailViewModel.LoadAsync(friendId);
+            await FriendDetailViewModel.LoadAsync(friendId);
         }
 
         public INavigationViewModel NavigationViewModel { get; }
-        
-        public  IFriendDetailViewModel FriendDetailViewModel
+
+        public IFriendDetailViewModel FriendDetailViewModel
         {
             get { return _friendDetailViewModel; }
             private set
@@ -53,7 +58,11 @@ namespace FriendOrganizer.UI.ViewModel
                 OnPropertyChanged();
             }
         }
+        private void OnCreateNewFriendExecute()
+        {
+            OnOpenFriendDetailView(null);
+        }
 
     }
-    
+
 }
