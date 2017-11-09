@@ -2,6 +2,7 @@
 using System.Windows.Input;
 using FriendOrganizer.Model;
 using FriendOrganizer.UI.Data;
+using FriendOrganizer.UI.Data.Repositories;
 using FriendOrganizer.UI.Event;
 using Prism.Commands;
 using Prism.Events;
@@ -11,20 +12,20 @@ namespace FriendOrganizer.UI.ViewModel
 {
     public class FriendDetailViewModel : ViewModelBase, IFriendDetailViewModel
     {
-        private readonly IFriendDataService _friendDataService;
+        private readonly IFriendRepository _friendRepository;
         private readonly IEventAggregator _eventAggregator;
         private FriendWrapper _friend;
 
-        public FriendDetailViewModel(IFriendDataService friendDataService, IEventAggregator eventAggregator)
+        public FriendDetailViewModel(IFriendRepository friendRepository, IEventAggregator eventAggregator)
         {
-            _friendDataService = friendDataService;
+            _friendRepository = friendRepository;
             _eventAggregator = eventAggregator;
             _eventAggregator.GetEvent<OpenFriendDetailViewEvent>().Subscribe(OnOpenFriendDetailView);
             SaveCommand = new DelegateCommand(OnSaveExecute, OnsaveCanExecute);
         }
         public async Task LoadAsync(int friendId)
         {
-            var friend = await _friendDataService.GetByIdAsync(friendId);
+            var friend = await _friendRepository.GetByIdAsync(friendId);
             Friend = new FriendWrapper(friend);
             Friend.PropertyChanged += (s, e) =>
             {
@@ -55,7 +56,7 @@ namespace FriendOrganizer.UI.ViewModel
 
         private async void OnSaveExecute()
         {
-            await _friendDataService.SaveAsync(Friend.Model);
+            await _friendRepository.SaveAsync();
             _eventAggregator.GetEvent<AfterFriendSavedEvent>().Publish(new AfterFriendSavedEventArgs
             {
                 Id = Friend.Id,
