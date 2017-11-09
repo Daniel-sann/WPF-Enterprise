@@ -14,7 +14,7 @@ namespace FriendOrganizer.DataAccess.Migrations
             AutomaticMigrationsEnabled = false;
         }
 
-        protected override void Seed(FriendOrganizer.DataAccess.FriendOrganizerDbContext context)
+        protected override void Seed(FriendOrganizerDbContext context)
         {
             context.Friends.AddOrUpdate(
                 f => f.FirstName,
@@ -23,6 +23,13 @@ namespace FriendOrganizer.DataAccess.Migrations
                 new Friend { FirstName = "Isaac", LastName = "Cox" },
                 new Friend { FirstName = "Mike", LastName = "Hunt" }
             );
+            context.ProgrammingLanguages.AddOrUpdate(
+                pl => pl.Name,
+                new ProgrammingLanguage { Name = "C#"},
+                new ProgrammingLanguage { Name = "TypeScript" },
+                new ProgrammingLanguage { Name = "F#" },
+                new ProgrammingLanguage { Name = "Swift" },
+                new ProgrammingLanguage { Name = "Java" });
         }
     }
 }
