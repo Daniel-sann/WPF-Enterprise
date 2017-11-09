@@ -61,7 +61,7 @@ namespace FriendOrganizer.UI.Wrapper
 
         protected virtual IEnumerable<string> ValidateProperty(string propertyName)
         {
-            throw new NotImplementedException();
+            return null;
         }
     }
 }

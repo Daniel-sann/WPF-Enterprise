@@ -42,6 +42,12 @@ namespace FriendOrganizer.UI.Wrapper
             get { return GetValue<int?>(); }
             set { SetValue(value);}
         }
+
+        public string PhoneNumber
+        {
+            get { return GetValue<string>(); }
+            set { SetValue(value);}
+        }
         protected override IEnumerable<string> ValidateProperty(string propertyName)
         {
             switch (propertyName)
@@ -51,7 +57,7 @@ namespace FriendOrganizer.UI.Wrapper
                     {
                         yield return "Robots are not valid friends";
                     }
-                    break;
+                    break;  
             }
         }
         }
