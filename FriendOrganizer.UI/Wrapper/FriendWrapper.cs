@@ -20,8 +20,6 @@ namespace FriendOrganizer.UI.Wrapper
 
 
 
-        
-
         public string LastName
         {
             get { return GetValue<string>(); }
@@ -37,6 +35,12 @@ namespace FriendOrganizer.UI.Wrapper
             {
                 SetValue(value);
             }
+        }
+
+        public int? FavoriteLanguageId
+        {
+            get { return GetValue<int?>(); }
+            set { SetValue(value);}
         }
         protected override IEnumerable<string> ValidateProperty(string propertyName)
         {

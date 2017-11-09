@@ -70,6 +70,7 @@ namespace FriendOrganizer.UI.ViewModel
         private async Task LoadProgrammingLanguagesLookupAsync()
         {
             ProgrammingLanguages.Clear();
+            ProgrammingLanguages.Add(new NullLookupItem{DisplayMember = " - "});
             var lookup = await _programmingLanguageLookupDataService.GetProgrammingLaguageLookupAsync();
             foreach (var lookupItem in lookup)
             {
