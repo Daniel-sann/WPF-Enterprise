@@ -22,10 +22,12 @@ namespace FriendOrganizer.UI.ViewModel
             _friendRepository = friendRepository;
             _eventAggregator = eventAggregator;
             SaveCommand = new DelegateCommand(OnSaveExecute, OnsaveCanExecute);
+            DeleteCommand = new DelegateCommand(OnDeleteExecute);
         }
+
         public async Task LoadAsync(int? friendId)
         {
-            var friend = friendId.HasValue ? await _friendRepository.GetByIdAsync(friendId.Value) : CreateNewFriend();               
+            var friend = friendId.HasValue ? await _friendRepository.GetByIdAsync(friendId.Value) : CreateNewFriend();
             Friend = new FriendWrapper(friend);
             Friend.PropertyChanged += (s, e) =>
             {
@@ -35,7 +37,7 @@ namespace FriendOrganizer.UI.ViewModel
                 }
                 if (e.PropertyName == nameof(Friend.HasErrors))
                 {
-                    ((DelegateCommand) SaveCommand).RaiseCanExecuteChanged();
+                    ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
                 }
             };
             ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
@@ -57,7 +59,7 @@ namespace FriendOrganizer.UI.ViewModel
         }
 
         public ICommand SaveCommand { get; }
-        
+        public ICommand DeleteCommand { get; }
 
         public bool HasChanges
         {
@@ -69,10 +71,9 @@ namespace FriendOrganizer.UI.ViewModel
                     _hasChanges = value;
                     OnPropertyChanged();
                     ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
-                }     
+                }
             }
         }
-
 
         private bool OnsaveCanExecute()
         {
@@ -94,6 +95,12 @@ namespace FriendOrganizer.UI.ViewModel
             var friend = new Friend();
             _friendRepository.Add(friend);
             return friend;
+        }
+        private async void OnDeleteExecute()
+        {
+            _friendRepository.Remove(Friend.Model);
+            await _friendRepository.SaveAsync();
+            _eventAggregator.GetEvent<AfterFriendDeletedEvent>().Publish(Friend.Id);
         }
     }
 }

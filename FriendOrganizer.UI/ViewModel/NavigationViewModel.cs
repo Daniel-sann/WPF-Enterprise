@@ -13,6 +13,7 @@ namespace FriendOrganizer.UI.ViewModel
     {
         private readonly IFriendLookupDataService _friendLookupDataService;
         private readonly IEventAggregator _eventAggregator;
+        public ObservableCollection<NavigationItemViewModel> Friends { get; }
 
         public NavigationViewModel(IFriendLookupDataService friendLookupDataService, IEventAggregator eventAggregator)
         {
@@ -20,6 +21,26 @@ namespace FriendOrganizer.UI.ViewModel
             _eventAggregator = eventAggregator;
             Friends = new ObservableCollection<NavigationItemViewModel>();
             _eventAggregator.GetEvent<AfterFriendSavedEvent>().Subscribe(AfterFriendsSaved);
+            _eventAggregator.GetEvent<AfterFriendDeletedEvent>().Subscribe(AfterFriendDeleted);
+        }
+
+        public async Task LoadAsync()
+        {
+            var lookup = await _friendLookupDataService.GetFriendLookupAsync();
+            Friends.Clear();
+            foreach (var item in lookup)
+            {
+                Friends.Add(new NavigationItemViewModel(item.Id, item.DisplayMember, _eventAggregator));
+            }
+        }
+        
+        private void AfterFriendDeleted(int friendId)
+        {
+            var friend = Friends.SingleOrDefault(f => f.Id == friendId);
+            if (friend != null)
+            {
+                Friends.Remove(friend);
+            }
         }
 
         private void AfterFriendsSaved(AfterFriendSavedEventArgs obj)
@@ -33,18 +54,7 @@ namespace FriendOrganizer.UI.ViewModel
             {
                 lookupItem.DisplayMember = obj.DisplayMember;
             }
-            
-        }
 
-        public async Task LoadAsync()
-        {
-            var lookup = await _friendLookupDataService.GetFriendLookupAsync();
-            Friends.Clear();
-            foreach (var item in lookup)
-            {
-                Friends.Add(new NavigationItemViewModel(item.Id, item.DisplayMember, _eventAggregator));
-            }
         }
-        public ObservableCollection<NavigationItemViewModel> Friends { get; }
     }
 }
