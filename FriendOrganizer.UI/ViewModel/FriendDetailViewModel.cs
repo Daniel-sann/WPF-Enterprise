@@ -32,11 +32,29 @@ namespace FriendOrganizer.UI.ViewModel
             _programmingLanguageLookupDataService = programmingLanguageLookupDataService;
             SaveCommand = new DelegateCommand(OnSaveExecute, OnsaveCanExecute);
             DeleteCommand = new DelegateCommand(OnDeleteExecute);
+            AddPhoneNumberCommand = new DelegateCommand(OnAddPhoneNumberExecute);
+            RemovePhoneNumberCommand = new DelegateCommand(OnRemovePhoneNumberExecute, OnRemovePhoneNumberCanExecute);
 
             ProgrammingLanguages = new ObservableCollection<LookupItem>();
         }
 
+        private void OnAddPhoneNumberExecute()
+        {
+            //TODO Implement thgis
+        }
+
+        private void OnRemovePhoneNumberExecute()
+        {
+            //TODO: implement tgis
+        }
+
+        private bool OnRemovePhoneNumberCanExecute()
+        {
+            return SelectedPhoneNumber != null;
+        }
+
         public ObservableCollection<LookupItem> ProgrammingLanguages { get; }
+        public ObservableCollection<FriendPhoneNumberWrapper> PhoneNumbers { get; }
 
         public async Task LoadAsync(int? friendId)
         {
@@ -70,11 +88,22 @@ namespace FriendOrganizer.UI.ViewModel
         private async Task LoadProgrammingLanguagesLookupAsync()
         {
             ProgrammingLanguages.Clear();
-            ProgrammingLanguages.Add(new NullLookupItem{DisplayMember = " - "});
+            ProgrammingLanguages.Add(new NullLookupItem { DisplayMember = " - " });
             var lookup = await _programmingLanguageLookupDataService.GetProgrammingLaguageLookupAsync();
             foreach (var lookupItem in lookup)
             {
                 ProgrammingLanguages.Add(lookupItem);
+            }
+        }
+
+        public FriendPhoneNumberWrapper SelectedPhoneNumber
+        {
+            get { return _selectedPhoneNumber; }
+            set
+            {
+                _selectedPhoneNumber = value;
+                OnPropertyChanged();
+                ((DelegateCommand)RemovePhoneNumberCommand).RaiseCanExecuteChanged();
             }
         }
 
@@ -90,6 +119,8 @@ namespace FriendOrganizer.UI.ViewModel
 
         public ICommand SaveCommand { get; }
         public ICommand DeleteCommand { get; }
+        public ICommand AddPhoneNumberCommand { get; }
+        public ICommand RemovePhoneNumberCommand { get; }
 
         public bool HasChanges
         {
@@ -136,7 +167,7 @@ namespace FriendOrganizer.UI.ViewModel
                 _friendRepository.Remove(Friend.Model);
                 await _friendRepository.SaveAsync();
                 _eventAggregator.GetEvent<AfterFriendDeletedEvent>().Publish(Friend.Id);
-            }           
+            }
         }
     }
 }
