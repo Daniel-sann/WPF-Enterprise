@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FriendOrganizer.UI.View"
+             xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
@@ -21,10 +22,10 @@
         <TextBox Grid.Row="1" Text="{Binding Meeting.Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
         
         <Label Grid.Row="2" Content="Start" Margin="10 0"/>
-        <DatePicker Grid.Row="3" SelectedDate="{Binding Meeting.DateFrom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <toolkit:DateTimePicker Grid.Row="3" Value="{Binding Meeting.DateFrom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
         <Label Grid.Row="4" Content="End" Margin="10 0"/>
-        <DatePicker Grid.Row="5" SelectedDate="{Binding Meeting.DateTo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <toolkit:DateTimePicker Grid.Row="5" Value="{Binding Meeting.DateTo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
         
         <StackPanel Grid.Row="7" Orientation="Horizontal">
             <Button Content="Save" Width="75" Margin="10" Command="{Binding SaveCommand}"/>
