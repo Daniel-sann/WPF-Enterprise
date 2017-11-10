@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Autofac.Features.Indexed;
 using FriendOrganizer.UI.Event;
 using FriendOrganizer.UI.View.Services;
 using Prism.Commands;
@@ -11,18 +12,15 @@ namespace FriendOrganizer.UI.ViewModel
     public class MainViewModel : ViewModelBase
     {
         private IDetailViewModel _detailViewModel;
-        private readonly IEventAggregator _eventAggregator;
-        private readonly Func<IFriendDetailViewModel> _friendDetailViewModelCreator;
-        private readonly IMessageDialogService _messageDialogService;
-        private Func<IMeetingDetailViewModel> _meetingDetailViewModelCreator;
+        private readonly IEventAggregator _eventAggregator;       
+        private readonly IMessageDialogService _messageDialogService;       
+        private IIndex<string, IDetailViewModel> _detailViewModelCreator;
 
-        public MainViewModel(INavigationViewModel navigationViewModel, Func<IFriendDetailViewModel> friendDetailViewModelCreator,
-            Func<IMeetingDetailViewModel> meetingDetailViewModelCreator ,IEventAggregator eventAggregator,
+        public MainViewModel(INavigationViewModel navigationViewModel, IIndex<string, IDetailViewModel> detailViewModelCreator ,IEventAggregator eventAggregator,
             IMessageDialogService messageDialogService)
         {
             _eventAggregator = eventAggregator;
-            _meetingDetailViewModelCreator = meetingDetailViewModelCreator;
-            _friendDetailViewModelCreator = friendDetailViewModelCreator;
+            _detailViewModelCreator = detailViewModelCreator;           
             _eventAggregator.GetEvent<OpenDetailViewEvent>().Subscribe(OnOpenDetailView);
             _eventAggregator.GetEvent<AfterDetailDeletedEvent>().Subscribe(AfterDetailDeleted);
             _messageDialogService = messageDialogService;
@@ -47,19 +45,8 @@ namespace FriendOrganizer.UI.ViewModel
                     return;
                 }
             }
-            
-            switch (args.ViewModelName)
-            {
-                case nameof(FriendDetailViewModel):
-                    DetailViewModel = _friendDetailViewModelCreator();
-                    break;
-                case nameof(MeetingDetailViewModel):
-                    DetailViewModel = _meetingDetailViewModelCreator();
-                    break;
-                default:
-                    throw new Exception($"ViewModel {args.ViewModelName} not mapped");
-                    
-            }
+                      
+            DetailViewModel = _detailViewModelCreator[args.ViewModelName];
             await DetailViewModel.LoadAsync(args.Id);
         }
 

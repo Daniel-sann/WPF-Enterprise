@@ -54,10 +54,14 @@ namespace FriendOrganizer.UI.ViewModel
                 }
                 if (e.PropertyName == nameof(Meeting.HasErrors))
                 {
-                    ((DelegateCommand) SaveCommand).RaiseCanExecuteChanged();
+                    ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
                 }
             };
             ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
+            if (Meeting.Title == null )
+            {
+                Meeting.Title = "";
+            }
         }
 
         private Meeting CreateNewMeeting()
