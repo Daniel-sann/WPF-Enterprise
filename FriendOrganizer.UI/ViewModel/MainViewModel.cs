@@ -10,7 +10,7 @@ namespace FriendOrganizer.UI.ViewModel
 {
     public class MainViewModel : ViewModelBase
     {
-        private IFriendDetailViewModel _friendDetailViewModel;
+        private IDetailViewModel _detailViewModel;
         private readonly IEventAggregator _eventAggregator;
         private readonly Func<IFriendDetailViewModel> _friendDetailViewModelCreator;
         private readonly IMessageDialogService _messageDialogService;
@@ -36,7 +36,7 @@ namespace FriendOrganizer.UI.ViewModel
 
         private async void OnOpenFriendDetailView(int? friendId)
         {
-            if (FriendDetailViewModel != null && FriendDetailViewModel.HasChanges)
+            if (DetailViewModel != null && DetailViewModel.HasChanges)
             {
                 var result = _messageDialogService.ShowOkCancelDialog("You have made changes. Navigate away?", "Question");
                 if (result == MessageDialogResult.Cancel)
@@ -44,18 +44,18 @@ namespace FriendOrganizer.UI.ViewModel
                     return;
                 }
             }
-            FriendDetailViewModel = _friendDetailViewModelCreator();
-            await FriendDetailViewModel.LoadAsync(friendId);
+            DetailViewModel = _friendDetailViewModelCreator();
+            await DetailViewModel.LoadAsync(friendId);
         }
 
         public INavigationViewModel NavigationViewModel { get; }
 
-        public IFriendDetailViewModel FriendDetailViewModel
+        public IDetailViewModel DetailViewModel
         {
-            get { return _friendDetailViewModel; }
+            get { return _detailViewModel; }
             private set
             {
-                _friendDetailViewModel = value;
+                _detailViewModel = value;
                 OnPropertyChanged();
             }
         }
@@ -66,7 +66,7 @@ namespace FriendOrganizer.UI.ViewModel
 
         private void AfterFriendsDeleted(int friendId)
         {
-            FriendDetailViewModel = null;
+            DetailViewModel = null;
         }
 
     }
