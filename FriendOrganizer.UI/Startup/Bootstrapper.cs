@@ -14,6 +14,7 @@ namespace FriendOrganizer.UI.Startup
         public IContainer Bootstrap()
         {
             var builder = new ContainerBuilder();
+            builder.RegisterType<MeetingDetailViewModel>().As<IMeetingDetailViewModel>();
             builder.RegisterType<MeetingRepository>().As<IMeetingRepository>();
             builder.RegisterType<MessageDialogService>().As<IMessageDialogService>();
             builder.RegisterType<EventAggregator>().As<IEventAggregator>().SingleInstance();
