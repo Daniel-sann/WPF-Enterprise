@@ -20,8 +20,8 @@ namespace FriendOrganizer.UI.ViewModel
         {
             _eventAggregator = eventAggregator;
             _friendDetailViewModelCreator = friendDetailViewModelCreator;
-            _eventAggregator.GetEvent<OpenFriendDetailViewEvent>().Subscribe(OnOpenFriendDetailView);
-            _eventAggregator.GetEvent<AfterFriendDeletedEvent>().Subscribe(AfterFriendsDeleted);
+            _eventAggregator.GetEvent<OpenDetailViewEvent>().Subscribe(OnOpenDetailView);
+            _eventAggregator.GetEvent<AfterDetailDeletedEvent>().Subscribe(AfterDetailDeleted);
             _messageDialogService = messageDialogService;
             CreateNewFriendCommand = new DelegateCommand(OnCreateNewFriendExecute);
             NavigationViewModel = navigationViewModel;
@@ -34,7 +34,7 @@ namespace FriendOrganizer.UI.ViewModel
 
         public ICommand CreateNewFriendCommand { get; }
 
-        private async void OnOpenFriendDetailView(int? friendId)
+        private async void OnOpenDetailView(OpenDetailViewEventArgs args)
         {
             if (DetailViewModel != null && DetailViewModel.HasChanges)
             {
@@ -45,7 +45,13 @@ namespace FriendOrganizer.UI.ViewModel
                 }
             }
             DetailViewModel = _friendDetailViewModelCreator();
-            await DetailViewModel.LoadAsync(friendId);
+            switch (args.ViewModelName)
+            {
+                case nameof(FriendDetailViewModel):
+                    DetailViewModel = _friendDetailViewModelCreator();
+                    break;
+            }
+            await DetailViewModel.LoadAsync(args.Id);
         }
 
         public INavigationViewModel NavigationViewModel { get; }
@@ -61,10 +67,10 @@ namespace FriendOrganizer.UI.ViewModel
         }
         private void OnCreateNewFriendExecute()
         {
-            OnOpenFriendDetailView(null);
+            OnOpenDetailView(null);
         }
 
-        private void AfterFriendsDeleted(int friendId)
+        private void AfterDetailDeleted(AfterDetailDeletedEventArgs args)
         {
             DetailViewModel = null;
         }
