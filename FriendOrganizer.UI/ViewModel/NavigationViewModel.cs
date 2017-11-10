@@ -20,7 +20,7 @@ namespace FriendOrganizer.UI.ViewModel
             _friendLookupDataService = friendLookupDataService;
             _eventAggregator = eventAggregator;
             Friends = new ObservableCollection<NavigationItemViewModel>();
-            _eventAggregator.GetEvent<AfterFriendSavedEvent>().Subscribe(AfterFriendsSaved);
+            _eventAggregator.GetEvent<AfterDetailSavedEvent>().Subscribe(AfterDetailSaved);
             _eventAggregator.GetEvent<AfterDetailDeletedEvent>().Subscribe(AfterDetailDeleted);
         }
 
@@ -33,7 +33,7 @@ namespace FriendOrganizer.UI.ViewModel
                 Friends.Add(new NavigationItemViewModel(item.Id, item.DisplayMember, nameof(FriendDetailViewModel), _eventAggregator));
             }
         }
-        
+
         private void AfterDetailDeleted(AfterDetailDeletedEventArgs args)
         {
             switch (args.ViewModelName)
@@ -44,22 +44,26 @@ namespace FriendOrganizer.UI.ViewModel
                     {
                         Friends.Remove(friend);
                     }
-                    break;          
-            }          
+                    break;
+            }
         }
 
-        private void AfterFriendsSaved(AfterFriendSavedEventArgs obj)
+        private void AfterDetailSaved(AfterDetailSavedEventArgs obj)
         {
-            var lookupItem = Friends.SingleOrDefault(f => f.Id == obj.Id);
-            if (lookupItem == null)
+            switch (obj.ViewModelName)
             {
-                Friends.Add(new NavigationItemViewModel(obj.Id, obj.DisplayMember, nameof(FriendDetailViewModel), _eventAggregator));
+                case nameof(FriendDetailViewModel):
+                    var lookupItem = Friends.SingleOrDefault(f => f.Id == obj.Id);
+                    if (lookupItem == null)
+                    {
+                        Friends.Add(new NavigationItemViewModel(obj.Id, obj.DisplayMember, nameof(FriendDetailViewModel), _eventAggregator));
+                    }
+                    else
+                    {
+                        lookupItem.DisplayMember = obj.DisplayMember;
+                    }
+                    break;
             }
-            else
-            {
-                lookupItem.DisplayMember = obj.DisplayMember;
-            }
-
         }
     }
 }
