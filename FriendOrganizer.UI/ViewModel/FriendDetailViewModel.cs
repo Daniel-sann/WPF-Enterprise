@@ -18,20 +18,18 @@ using FriendOrganizer.UI.Wrapper;
 namespace FriendOrganizer.UI.ViewModel
 {
     public class FriendDetailViewModel : DetailViewModelBase, IFriendDetailViewModel
-    {
-        private bool _hasChanges;
-        private readonly IFriendRepository _friendRepository;       
-        private readonly IMessageDialogService _messageDialogService;
+    {       
+        private readonly IFriendRepository _friendRepository;             
         private FriendPhoneNumberWrapper _selectedPhoneNumber;
         private FriendWrapper _friend;
         private readonly IProgrammingLanguageLookupDataService _programmingLanguageLookupDataService;
 
 
         public FriendDetailViewModel(IFriendRepository friendRepository, IEventAggregator eventAggregator, IMessageDialogService messageDialogService,
-            IProgrammingLanguageLookupDataService programmingLanguageLookupDataService) : base(eventAggregator)
+            IProgrammingLanguageLookupDataService programmingLanguageLookupDataService) : base(eventAggregator, messageDialogService)
         {
             _friendRepository = friendRepository;          
-            _messageDialogService = messageDialogService;
+            
             _programmingLanguageLookupDataService = programmingLanguageLookupDataService;           
             AddPhoneNumberCommand = new DelegateCommand(OnAddPhoneNumberExecute);
             RemovePhoneNumberCommand = new DelegateCommand(OnRemovePhoneNumberExecute, OnRemovePhoneNumberCanExecute);
@@ -201,12 +199,12 @@ namespace FriendOrganizer.UI.ViewModel
         {
             if (await _friendRepository.HasMeetingsAsync(Friend.Id))
             {
-                _messageDialogService.ShowInfoDialog($"{Friend.FirstName} {Friend.LastName} cant be deleted because hen is in a meeting");
+                MessageDialogService.ShowInfoDialog($"{Friend.FirstName} {Friend.LastName} cant be deleted because hen is in a meeting");
                 return;
             }
 
             var result =
-                _messageDialogService.ShowOkCancelDialog($"Do you really want to delete the friend {Friend.FirstName}",
+                MessageDialogService.ShowOkCancelDialog($"Do you really want to delete the friend {Friend.FirstName}",
                     "Question");
             if (result == MessageDialogResult.OK)
             {

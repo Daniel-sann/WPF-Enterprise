@@ -25,6 +25,7 @@ namespace FriendOrganizer.UI.ViewModel
             _detailViewModelCreator = detailViewModelCreator;
             _eventAggregator.GetEvent<OpenDetailViewEvent>().Subscribe(OnOpenDetailView);
             _eventAggregator.GetEvent<AfterDetailDeletedEvent>().Subscribe(AfterDetailDeleted);
+            _eventAggregator.GetEvent<AfterDetailClosedEvent>().Subscribe(AfterDetailClosed);
             _messageDialogService = messageDialogService;
             CreateNewDetailCommand = new DelegateCommand<Type>(OnCreateNewDetailExecute);
             NavigationViewModel = navigationViewModel;
@@ -74,8 +75,17 @@ namespace FriendOrganizer.UI.ViewModel
 
         private void AfterDetailDeleted(AfterDetailDeletedEventArgs args)
         {
-            var detailViewModel =
-                DetailViewModels.SingleOrDefault(v => v.Id == args.Id && v.GetType().Name == args.ViewModelName);
+            RemoveDetailViewModel(args.Id, args.ViewModelName);
+        }
+
+        private void AfterDetailClosed(AfterDetailClosedEventArgs args)
+        {
+            RemoveDetailViewModel(args.Id, args.ViewModelName);
+        }
+
+        private void RemoveDetailViewModel(int id, string viewModelName)
+        {
+            var detailViewModel = DetailViewModels.SingleOrDefault(v => v.Id == id && v.GetType().Name == viewModelName);
             if (detailViewModel != null)
             {
                 DetailViewModels.Remove(detailViewModel);
