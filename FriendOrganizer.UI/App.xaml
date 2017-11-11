@@ -6,6 +6,7 @@
              DispatcherUnhandledException="Application_DispatcherUnhandledException">
 
     <Application.Resources>
+        <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter"/>
         <Style TargetType="TextBox">
             <Setter Property="Validation.ErrorTemplate">
                 <Setter.Value>

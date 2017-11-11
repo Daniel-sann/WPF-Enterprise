@@ -72,13 +72,13 @@ namespace FriendOrganizer.UI.ViewModel
             }
         }
 
-        public override async Task LoadAsync(int? meetingId)
+        public override async Task LoadAsync(int meetingId)
         {
-            var meeting = meetingId.HasValue
-                ? await _meetingRepository.GetByIdAsync(meetingId.Value)
-                : CreateNewMeeting();
+            var meeting = meetingId > 0
+        ? await _meetingRepository.GetByIdAsync(meetingId)
+        : CreateNewMeeting();
 
-            Id = Meeting.Id;
+            Id = meetingId;
 
             InitializeMeeting(meeting);
 
@@ -118,12 +118,22 @@ namespace FriendOrganizer.UI.ViewModel
                 {
                     ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
                 }
+                if (e.PropertyName == nameof(Meeting.Title))
+                {
+                    SetTitle();
+                }
             };
             ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
-            if (Meeting.Title == null)
+            if (Meeting.Model.Id == 0)
             {
                 Meeting.Title = "";
             }
+            SetTitle();
+        }
+
+        private void SetTitle()
+        {
+            Title = Meeting.Title;
         }
 
         private Meeting CreateNewMeeting()

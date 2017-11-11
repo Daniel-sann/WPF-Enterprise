@@ -12,23 +12,37 @@ namespace FriendOrganizer.UI.ViewModel
         protected readonly IEventAggregator EventAggregator;
         private bool _hasChanges;
         private int _id;
+        private string _title;
 
         public DetailViewModelBase(IEventAggregator eventAggregator)
         {
             EventAggregator = eventAggregator;
             SaveCommand = new DelegateCommand(OnSaveExecute, OnSaveCanExecute);
             DeleteCommand = new DelegateCommand(OnDeleteExecute);
+            CloseDetailViewCommand = new DelegateCommand(OnCloseDetailViewExecute);
         }
 
-        public abstract Task LoadAsync(int? id);
+        public abstract Task LoadAsync(int id);
         public ICommand SaveCommand { get; private set; }
         public ICommand DeleteCommand { get; private set; }
+        public ICommand CloseDetailViewCommand { get; }
         
 
         public int Id
         {
             get { return _id; }
             protected set { _id = value; }
+        }
+
+        public string Title
+        {
+            get { return _title;}
+            set
+            {
+                _title = value; 
+                OnPropertyChanged();
+            }
+
         }
 
         public bool HasChanges
