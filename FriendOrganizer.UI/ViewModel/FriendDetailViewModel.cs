@@ -70,6 +70,8 @@ namespace FriendOrganizer.UI.ViewModel
         public override async Task LoadAsync(int? friendId)
         {
             var friend = friendId.HasValue ? await _friendRepository.GetByIdAsync(friendId.Value) : CreateNewFriend();
+
+            Id = Friend.Id;  
             InitializeFriend(friend);
             InitializeFriendPhoneNumbers(friend.PhoneNumbers);
             await LoadProgrammingLanguagesLookupAsync();
@@ -171,6 +173,7 @@ namespace FriendOrganizer.UI.ViewModel
         {
             await _friendRepository.SaveAsync();
             HasChanges = _friendRepository.HasChanges();
+            Id = Friend.Id;
             RaiseDetailSavedEvent(Friend.Id, $"{Friend.FirstName} {Friend.LastName}");          
         }
         private Friend CreateNewFriend()
