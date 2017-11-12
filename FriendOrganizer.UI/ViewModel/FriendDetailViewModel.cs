@@ -19,8 +19,8 @@ using FriendOrganizer.UI.Wrapper;
 namespace FriendOrganizer.UI.ViewModel
 {
     public class FriendDetailViewModel : DetailViewModelBase, IFriendDetailViewModel
-    {       
-        private readonly IFriendRepository _friendRepository;             
+    {
+        private readonly IFriendRepository _friendRepository;
         private FriendPhoneNumberWrapper _selectedPhoneNumber;
         private FriendWrapper _friend;
         private readonly IProgrammingLanguageLookupDataService _programmingLanguageLookupDataService;
@@ -29,8 +29,8 @@ namespace FriendOrganizer.UI.ViewModel
         public FriendDetailViewModel(IFriendRepository friendRepository, IEventAggregator eventAggregator, IMessageDialogService messageDialogService,
             IProgrammingLanguageLookupDataService programmingLanguageLookupDataService) : base(eventAggregator, messageDialogService)
         {
-            _friendRepository = friendRepository;          
-            
+            _friendRepository = friendRepository;
+
             _programmingLanguageLookupDataService = programmingLanguageLookupDataService;
             eventAggregator.GetEvent<AfterCollectionSavedEvent>().Subscribe(AfterCollectionSaved);
             AddPhoneNumberCommand = new DelegateCommand(OnAddPhoneNumberExecute);
@@ -38,7 +38,7 @@ namespace FriendOrganizer.UI.ViewModel
 
             ProgrammingLanguages = new ObservableCollection<LookupItem>();
             PhoneNumbers = new ObservableCollection<FriendPhoneNumberWrapper>();
-        }     
+        }
 
         private void OnAddPhoneNumberExecute()
         {
@@ -180,10 +180,10 @@ namespace FriendOrganizer.UI.ViewModel
                 OnPropertyChanged();
             }
         }
-        
+
         public ICommand AddPhoneNumberCommand { get; }
         public ICommand RemovePhoneNumberCommand { get; }
-       
+
         protected override bool OnSaveCanExecute()
         {
             return Friend != null
@@ -194,32 +194,12 @@ namespace FriendOrganizer.UI.ViewModel
 
         protected override async void OnSaveExecute()
         {
-            try
+            await SaveWithOptimisticConcurrencyAsync(_friendRepository.SaveAsync, () =>
             {
-                await _friendRepository.SaveAsync();
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                var result =
-                    MessageDialogService.ShowOkCancelDialog(
-                        "The entity has been changed in the meantime by someone else. Click OK to save your changes anyway, click cancel to cancel",
-                        "Question");
-
-                if (result == MessageDialogResult.OK)
-                {
-                    var entry = ex.Entries.Single();
-                    entry.OriginalValues.SetValues(entry.GetDatabaseValues());
-                    await _friendRepository.SaveAsync();
-                }
-                else
-                {
-                    await ex.Entries.Single().ReloadAsync();
-                    await LoadAsync(Friend.Id);
-                }
-            }
-            HasChanges = _friendRepository.HasChanges();
-            Id = Friend.Id;
-            RaiseDetailSavedEvent(Friend.Id, $"{Friend.FirstName} {Friend.LastName}");          
+                HasChanges = _friendRepository.HasChanges();
+                Id = Friend.Id;
+                RaiseDetailSavedEvent(Friend.Id, $"{Friend.FirstName} {Friend.LastName}");
+            });
         }
         private Friend CreateNewFriend()
         {
@@ -242,7 +222,7 @@ namespace FriendOrganizer.UI.ViewModel
             {
                 _friendRepository.Remove(Friend.Model);
                 await _friendRepository.SaveAsync();
-                RaiseDetailDeletedEvent(Friend.Id);        
+                RaiseDetailDeletedEvent(Friend.Id);
             }
         }
     }

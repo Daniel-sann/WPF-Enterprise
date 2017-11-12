@@ -1,10 +1,13 @@
-﻿using System.Data.Entity.Core.Common.CommandTrees;
+﻿using System;
+using System.Data.Entity.Core.Common.CommandTrees;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using FriendOrganizer.UI.Event;
 using FriendOrganizer.UI.View.Services;
 using Prism.Commands;
 using Prism.Events;
+using System.Data.Entity.Infrastructure;
+using System.Linq;
 
 namespace FriendOrganizer.UI.ViewModel
 {
@@ -110,6 +113,41 @@ namespace FriendOrganizer.UI.ViewModel
                 Id = this.Id,
                 ViewModelName = this.GetType().Name
             });
+        }
+        protected async Task SaveWithOptimisticConcurrencyAsync(Func<Task> saveFunc, Action afterSaveAction)
+        {
+            try
+            {
+                await saveFunc();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                var databaseValues = ex.Entries.Single().GetDatabaseValues();
+                if (databaseValues == null)
+                {
+                    MessageDialogService.ShowInfoDialog("The entity has been deleted by antoher user");
+                    RaiseDetailDeletedEvent(Id);
+                    return;
+                }
+
+                var result =
+                    MessageDialogService.ShowOkCancelDialog(
+                        "The entity has been changed in the meantime by someone else. Click OK to save your changes anyway, click cancel to cancel",
+                        "Question");
+
+                if (result == MessageDialogResult.OK)
+                {
+                    var entry = ex.Entries.Single();
+                    entry.OriginalValues.SetValues(entry.GetDatabaseValues());
+                    await saveFunc();
+                }
+                else
+                {
+                    await ex.Entries.Single().ReloadAsync();
+                    await LoadAsync(Id);
+                }
+            }
+            afterSaveAction();
         }
     }
 }
