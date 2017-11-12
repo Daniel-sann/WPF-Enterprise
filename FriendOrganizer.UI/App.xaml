@@ -31,8 +31,9 @@
                     </Style>
 
                     <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter"/>
-        <Style TargetType="TextBox">
-            <Setter Property="Validation.ErrorTemplate">
+        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                        <Setter Property="FontSize" Value="20"/>
+                        <Setter Property="Validation.ErrorTemplate">
                 <Setter.Value>
                     <ControlTemplate>
                         <StackPanel>

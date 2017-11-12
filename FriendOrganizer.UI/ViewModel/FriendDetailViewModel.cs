@@ -211,12 +211,12 @@ namespace FriendOrganizer.UI.ViewModel
         {
             if (await _friendRepository.HasMeetingsAsync(Friend.Id))
             {
-                MessageDialogService.ShowInfoDialog($"{Friend.FirstName} {Friend.LastName} cant be deleted because hen is in a meeting");
+               await MessageDialogService.ShowInfoDialogAsync($"{Friend.FirstName} {Friend.LastName} cant be deleted because hen is in a meeting");
                 return;
             }
 
             var result =
-                MessageDialogService.ShowOkCancelDialog($"Do you really want to delete the friend {Friend.FirstName}",
+                await MessageDialogService.ShowOkCancelDialogAsync($"Do you really want to delete the friend {Friend.FirstName}",
                     "Question");
             if (result == MessageDialogResult.OK)
             {

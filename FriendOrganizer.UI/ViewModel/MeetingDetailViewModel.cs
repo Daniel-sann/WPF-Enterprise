@@ -18,7 +18,7 @@ namespace FriendOrganizer.UI.ViewModel
     public class MeetingDetailViewModel : DetailViewModelBase, IMeetingDetailViewModel
     {
         private IMeetingRepository _meetingRepository;
-        private MeetingWrapper _meeting;     
+        private MeetingWrapper _meeting;
         private Friend _selectedAvailableFriend;
         private Friend _selectedAddedFriend;
         private List<Friend> _allFriends;
@@ -66,7 +66,7 @@ namespace FriendOrganizer.UI.ViewModel
             get { return _selectedAddedFriend; }
             set
             {
-                _selectedAddedFriend = value; 
+                _selectedAddedFriend = value;
                 OnPropertyChanged();
                 ((DelegateCommand)RemoveFriendCommand).RaiseCanExecuteChanged();
             }
@@ -147,15 +147,15 @@ namespace FriendOrganizer.UI.ViewModel
             return meeting;
         }
 
-        protected override void OnDeleteExecute()
+        protected async override void OnDeleteExecute()
         {
             var result =
-                MessageDialogService.ShowOkCancelDialog($"Do you really want to delete the meeting {Meeting.Title}?",
+                await MessageDialogService.ShowOkCancelDialogAsync($"Do you really want to delete the meeting {Meeting.Title}?",
                     "Question");
             if (result == MessageDialogResult.OK)
             {
                 _meetingRepository.Remove(Meeting.Model);
-                _meetingRepository.SaveAsync();
+                await _meetingRepository.SaveAsync();
                 RaiseDetailDeletedEvent(Meeting.Id);
             }
         }
