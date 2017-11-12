@@ -14,6 +14,7 @@ namespace FriendOrganizer.UI.Startup
         public IContainer Bootstrap()
         {
             var builder = new ContainerBuilder();
+            builder.RegisterType<ProgrammingLanguageRepository>().As<IProgrammingLanguageRepository>();
             builder.RegisterType<ProgrammingLanguageDetailViewModel>().Keyed<IDetailViewModel>(nameof(ProgrammingLanguageDetailViewModel));
             builder.RegisterType<MeetingDetailViewModel>().Keyed<IDetailViewModel>(nameof(MeetingDetailViewModel));
             builder.RegisterType<MeetingRepository>().As<IMeetingRepository>();

@@ -1,4 +1,7 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Runtime.Remoting.Messaging;
 using System.Threading.Tasks;
 
 namespace FriendOrganizer.UI.Data.Repositories
@@ -35,6 +38,11 @@ namespace FriendOrganizer.UI.Data.Repositories
         public void Remove(TEntity model)
         {
             Context.Set<TEntity>().Remove(model);
+        }
+
+        public async Task<IEnumerable<TEntity>> GetAllAsync()
+        {
+            return await Context.Set<TEntity>().ToListAsync();
         }
     }
 }
